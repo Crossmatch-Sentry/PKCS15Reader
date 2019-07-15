@@ -257,7 +257,6 @@ public class CardService extends Service {
                                     sendBroadcast(broadcastIntent);
                                     //Log.i(LOG_TAG, "Sending broadcastIntent with DATA = Card Found\n");
 
-/*
                                     // launch card detect activity(?)
                                     // by sending a unique broadcast intent:
                                     broadcastIntent.setAction("com.crossmatch.cardservice.CARD_EVENT");
@@ -266,7 +265,6 @@ public class CardService extends Service {
                                     //sendBroadcast(broadcastIntent);
                                     sendOrderedBroadcast(broadcastIntent,null);
                                     //Log.i(LOG_TAG, "sendOrderedBroadcast with DATA = Card Found + ATR\n");
-*/
 
                                 }
 
