@@ -1,0 +1,1 @@
+include ':pkcs15-reader', ':sentrypcsc-debug'

@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">PKCS15-Reader</string>
+    <string name="pin_text">Card Pin</string>
+    <string name="dialog_ok">OK</string>
+    <string name="start_message">Waiting for Card...</string>
+    <string name="pin_success">PIN Entered OK</string>
+    <string name="pin_fail">Please Enter a PIN</string>
+    <string name="new_card_notification_title_template">New Card: %1$s</string>
+    <string name="new_card_notification_placeholder_text_template">New %1$s you must enter your card PIN. Select this notification and enter your PIN</string>
+    <string name="card_empty_txt">Removed</string>
+    <string name="card_status_txt">Card reader status</string>
+    <string name="card_insert_txt">Present</string>
+    <string name="btn_display_txt">Display Card Contents</string>
+</resources>
