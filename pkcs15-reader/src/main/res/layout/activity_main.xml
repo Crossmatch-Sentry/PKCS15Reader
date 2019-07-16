@@ -45,6 +45,13 @@
                     android:layout_height="wrap_content"
                     android:onClick="DisplayCardData"
                     android:text="@string/btn_display_txt" />
+
+                <Button
+                    android:id="@+id/btn_fingers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="DisplayFingerprintData"
+                    android:text="@string/btn_fingers_txt" />
             </TableRow>
 
         </TableLayout>

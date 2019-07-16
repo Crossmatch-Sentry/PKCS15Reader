@@ -2,20 +2,14 @@ package com.crossmatch.pkcs15_reader;
 
 import android.annotation.TargetApi;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.StrictMode;
 import android.os.UserHandle;
 import android.util.Log;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.simalliance.openmobileapi.service.pcsc.PcscException;
 import org.simalliance.openmobileapi.service.pcsc.PcscJni;
@@ -24,8 +18,6 @@ import org.simalliance.openmobileapi.service.pcsc.PcscJni;
 public class CardService extends Service {
     private boolean DEVELOPER_MODE = true;
     private String LOG_TAG = null;
-
-    private ArrayList<String> mList;
 
     long context = 0;   // PCSC context returned from open
     String[] terminals = null;
@@ -55,11 +47,6 @@ public class CardService extends Service {
         super.onCreate();
         LOG_TAG = this.getClass().getSimpleName();
         Log.i(LOG_TAG, "In onCreate");
-        mList = new ArrayList<String>();
-        mList.add("Object 1");
-        mList.add("Object 2");
-        mList.add("Object 3");
-
     }
 
     /**
@@ -242,8 +229,6 @@ public class CardService extends Service {
                                 }
                                 if (atr==null) {
                                     logText("No card on reader: "+readers[current_reader] + "\n");
-                                    // if card was removed cancel any existing Notification
-                                    NewCardNotification.cancel(getApplicationContext());
                                 } else {
                                     logText("Found card on reader: "+readers[current_reader] + "\n");
 
@@ -256,15 +241,6 @@ public class CardService extends Service {
                                     broadcastIntent.putExtra("Data", "Card Found");
                                     sendBroadcast(broadcastIntent);
                                     //Log.i(LOG_TAG, "Sending broadcastIntent with DATA = Card Found\n");
-
-                                    // launch card detect activity(?)
-                                    // by sending a unique broadcast intent:
-                                    broadcastIntent.setAction("com.crossmatch.cardservice.CARD_EVENT");
-                                    broadcastIntent.putExtra("Data", "Card Found");
-                                    broadcastIntent.putExtra("ATR", atr);
-                                    //sendBroadcast(broadcastIntent);
-                                    sendOrderedBroadcast(broadcastIntent,null);
-                                    //Log.i(LOG_TAG, "sendOrderedBroadcast with DATA = Card Found + ATR\n");
 
                                 }
 

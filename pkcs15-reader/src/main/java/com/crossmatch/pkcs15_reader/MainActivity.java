@@ -20,7 +20,7 @@
  * For example to "dump" the complete contents of a CAC card, which will
  * require the users PIN to be entered you can do something like this:
  *
- *      adb > pkcs15-tool  --dump --pin 1234
+ *      adb > pkcs15-tool --dump --pin 1234
  *
  * If you wanted to just dump the CHUID (Card Holder Unique Identifier) container.
  * You first need to figure out the container ID which can be found by the
@@ -81,6 +81,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -93,9 +94,6 @@ import android.widget.Toast;
 
 import org.simalliance.openmobileapi.service.pcsc.PcscJni;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
     private String LOG_TAG = null;
@@ -106,15 +104,15 @@ public class MainActivity extends AppCompatActivity {
     public static final String mBroadcastCardEvent = "com.crossmatch.cardservice.CARD_EVENT";
     private IntentFilter mIntentFilter;
     public Pkcs15Receiver pkcs15Receiver;
+    PkcsSpinnerDialog pkcsSpinner = new PkcsSpinnerDialog();
 
     TextView tvConsole;
     TextView tvCardStatus;
     EditText mPin;
     Handler mHandler;
     AlertDialog alertDialog = null;
-    Button mDisplayButton;
-
-    public static NewCardNotification newCardNotification = new NewCardNotification();
+    Button mDumpButton;
+    Button mFingersButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,8 +127,10 @@ public class MainActivity extends AppCompatActivity {
         // Setup UI
         tvConsole = findViewById(R.id.console);
         tvCardStatus = findViewById(R.id.tvCardStatus);
-        mDisplayButton = findViewById(R.id.btn_display);
-        mDisplayButton.setEnabled(false);
+        mDumpButton = findViewById(R.id.btn_display);
+        mDumpButton.setEnabled(false);
+        mFingersButton = findViewById(R.id.btn_fingers);
+        mFingersButton.setEnabled(false);
 
         // Create intent filter for card events
         mIntentFilter = new IntentFilter();
@@ -156,24 +156,6 @@ public class MainActivity extends AppCompatActivity {
 
         tvConsole.setText("Waiting for card...\n");
 
-        // see if there is a notification intent waiting for us
-        onNewIntent(getIntent());
-    }
-
-    @Override
-    public void onNewIntent(Intent intent){
-        Bundle extras = intent.getExtras();
-        if(extras != null){
-            if(extras.containsKey("card_detect"))
-            {
-                NewCardNotification.cancel(getApplicationContext());
-                //setContentView(R.layout.activity_main);
-                // extract the extra-data in the Notification
-                int card_detect = extras.getInt("card_detect");
-                tvConsole.append("Card Detect Intent message: "+card_detect);
-                launchPinEntry();
-            }
-        }
     }
 
     /**
@@ -187,13 +169,41 @@ public class MainActivity extends AppCompatActivity {
         /* build up command string to pass to pkcs15 service to run*/
 
         // dump everything
-        //String cmd = "pkcs15-tool --list-applications  --dump --pin "+ mPin.getText();
+        tvConsole.setText("");   // clear console
+        tvConsole.append("Dumping All:\n");
+        String cmd = "pkcs15-tool --dump --pin "+ mPin.getText();
 
         // dump CHUID (doesn't need PIN)
-        String cmd = "pkcs15-tool --read-data-object 2.16.840.1.101.3.7.2.48.0 ";
+        //tvConsole.append("Dumping CHUID:\n");
+        //String cmd = "pkcs15-tool --read-data-object 2.16.840.1.101.3.7.2.48.0 ";
 
         // dump fingerprint container (needs PIN)
+        //tvConsole.append("Dumping Fingerprint Container:\n");
         //String cmd = "pkcs15-tool  --read-data-object 2.16.840.1.101.3.7.2.96.16 --verify-pin --pin "+ mPin.getText();
+
+        RunPkcs15Command(cmd);
+    }
+
+    /**
+     * Called when the user selects Display Fingerprints button
+     *
+     * @param view
+     */
+    public void DisplayFingerprintData(View view) {
+        Log.v(LOG_TAG, "Dump Fingerprint data...");
+
+        /* build up command string to pass to pkcs15 service to run*/
+        // dump fingerprint container (needs PIN)
+        tvConsole.setText("");   // clear console
+        tvConsole.append("Dumping Fingerprint Container:\n");
+        String cmd = "pkcs15-tool  --read-data-object 2.16.840.1.101.3.7.2.96.16 --verify-pin --pin "+ mPin.getText();
+        RunPkcs15Command(cmd);
+    }
+
+    private void RunPkcs15Command(String cmd) {
+        // setup a progress dialog spinner
+        FragmentManager fm = getSupportFragmentManager();
+        pkcsSpinner.show(fm, "some_tag");
 
         Log.v(LOG_TAG, "Running pkcs15-tool command: " + cmd);
         Pkcs15IntentService.startActionRunCmd(getApplicationContext(), pkcs15Receiver, cmd, "bar");
@@ -209,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
         pkcs15Receiver.setReceiver(new Pkcs15Receiver.Receiver() {
             @Override
             public void onReceiveResult(int resultCode, Bundle resultData) {
+                pkcsSpinner.dismiss();
                 if (resultCode == RESULT_OK) {
                     String resultValue = resultData.getString("resultValue");
                     tvConsole.append("Got result: "+resultValue+"\n");
@@ -248,7 +259,8 @@ public class MainActivity extends AppCompatActivity {
                     if(!mPin.getText().toString().isEmpty()) {
                         Log.v(LOG_TAG, "Accepted user PIN = " + mPin.getText());
                         tvConsole.append("New card PIN: "+ mPin.getText()+ "\n");
-                        mDisplayButton.setEnabled(true);
+                        mDumpButton.setEnabled(true);
+                        mFingersButton.setEnabled(true);
                     } else {
                         Toast.makeText(MainActivity.this,
                                 R.string.pin_fail,
@@ -287,7 +299,8 @@ public class MainActivity extends AppCompatActivity {
                     tvConsole.setText(tvConsole.getText().toString() + reader_state + "\n\n");
                     if (reader_state == PcscJni.ReaderState.Empty) {
                         tvCardStatus.setText(getString(R.string.card_empty_txt));
-                        mDisplayButton.setEnabled(false);
+                        mDumpButton.setEnabled(false);
+                        mFingersButton.setEnabled(false);
                         if (alertDialog != null)
                             alertDialog.dismiss();
                     }

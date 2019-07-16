@@ -10,5 +10,6 @@
     <string name="card_empty_txt">Removed</string>
     <string name="card_status_txt">Card reader status</string>
     <string name="card_insert_txt">Present</string>
-    <string name="btn_display_txt">Display Card Contents</string>
+    <string name="btn_display_txt">Dump Card</string>
+    <string name="btn_fingers_txt">Dump Fingerprints</string>
 </resources>
