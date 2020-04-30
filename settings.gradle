@@ -1,1 +1,1 @@
-include ':pkcs15-reader', ':sentrypcsc-debug'
+include ':pkcs15-reader', ':sentrypcsc-debug', ':sentrypcsc-2.0', ':sentrypcsc-3.0'
