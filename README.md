@@ -1,10 +1,40 @@
 # PKCS15Reader
 
-Copyright 2018 Crossmatch Technologies, Inc. All rights reserved
+Copyright 2018 - 2020 Crossmatch Technologies, Inc. All rights reserved
 
 Sample program to illustrate reading from a contact smartcard on the Crossmatch Verifier Sentry device using the pcks15-tool that is built-in to the Crossmatch Sentry device. 
 
 Given a PKCS#15 compliant smartcard like a CAC card, TWIC card, etc. the user can dump all the containers on the card and/.or display the fingerprint container itself.
+
+## Building the application
+
+Due to Android platform changes, the JNI library that provides and interface to the smartcard reader on the Sentry device is 
+specific for each supported Android version as follows:
+
+ <table border= style="width:100%">
+  <tr>
+    <th>Android Version</th>
+    <th>Module name</th>
+  </tr>
+  <tr>
+    <td>Lollipop</td>
+    <td>sentrypcsc-debug</td>
+  </tr>
+  <tr>
+    <td>Oreo (8)</td>
+    <td>sentrypcsc-2.0</td>
+  </tr>
+  <tr>
+    <td>Pie (9)</td>
+    <td>sentrypcsc-3.0</td>
+  </tr>
+</table> 
+
+To build the application for a particular Android version, change the module setting to match that in the table above. 
+
+This is selected from projects "Open Module Settings" and change the Dependencies for the pkcs15-reader module select the proper
+module dependency. To change from one Android version to another you should first remove the existing "sentrypcsc-xxx" dependency and
+add the proper version that matches the Android version you are targeting from the table above.
 
 ## Running the program:
 
