@@ -1,4 +1,7 @@
-package com.crossmatch.pkcs15_reader;
+/**
+ * Copyright 2018 Crossmatch Technologies, Inc. All rights reserved.
+**/
+ package com.crossmatch.pkcs15_reader;
 
 import android.annotation.TargetApi;
 import android.app.Service;

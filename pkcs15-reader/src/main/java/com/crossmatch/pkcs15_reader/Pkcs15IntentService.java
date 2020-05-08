@@ -1,3 +1,6 @@
+/**
+ * Copyright 2018 Crossmatch Technologies, Inc. All rights reserved.
+ **/
 package com.crossmatch.pkcs15_reader;
 
 import android.app.Activity;
