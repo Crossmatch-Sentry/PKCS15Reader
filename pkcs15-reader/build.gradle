@@ -2,7 +2,16 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 28
-    ndkVersion "21.0.6113669"
+    //ndkVersion "21.0.6113669"
+
+    signingConfigs {
+        config {
+            keyPassword 'LiveScan1'
+            storeFile file('../keystore.jks')
+            storePassword 'LiveScan1'
+            keyAlias 'key0'
+        }
+    }
     defaultConfig {
         applicationId "com.crossmatch.pkcs15_reader"
         minSdkVersion 22
@@ -14,6 +23,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.config
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
