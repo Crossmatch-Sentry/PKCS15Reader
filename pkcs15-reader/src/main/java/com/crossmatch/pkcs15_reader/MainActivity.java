@@ -78,9 +78,12 @@ package com.crossmatch.pkcs15_reader;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -152,6 +155,37 @@ public class MainActivity extends AppCompatActivity {
             // This starts the service when app launches --> moved to start on power up
             Intent serviceIntent = new Intent(this, CardService.class);
             startService(serviceIntent);
+        }
+
+        /* check if NFC is running and alert user */
+        android.nfc.NfcAdapter mNfcAdapter= android.nfc.NfcAdapter.getDefaultAdapter(this);
+
+        if (mNfcAdapter.isEnabled()) {
+
+            AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
+            alertbox.setTitle("Info");
+            alertbox.setMessage(getString(R.string.msg_nfcon));
+            alertbox.setPositiveButton("Turn Off", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+                        startActivity(intent);
+                    } else {
+                        Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                        startActivity(intent);
+                    }
+                }
+            });
+            alertbox.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            alertbox.show();
+
         }
 
         tvConsole.setText("Waiting for card...\n");

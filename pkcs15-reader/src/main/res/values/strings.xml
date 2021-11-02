@@ -12,4 +12,6 @@
     <string name="card_insert_txt">Present</string>
     <string name="btn_display_txt">Dump Card</string>
     <string name="btn_fingers_txt">Dump Fingerprints</string>
+    <string name="msg_nfcon">To prevent conflicts with dual-mode smartcards disable NFC</string>
+
 </resources>
